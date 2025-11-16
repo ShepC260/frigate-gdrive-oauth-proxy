@@ -75,55 +75,75 @@ async def auth_callback(request: Request):
     html = f"""
     <html>
       <head>
-        <title>Frigate Backup Manager - Google Drive Token</title>
+        <title>Google Drive Token Ready</title>
         <style>
           body {{
-            background: #101010;
-            color: #f0f0f0;
-            font-family: system-ui, sans-serif;
-            padding: 1.5rem;
+            background:#111;
+            color:#eee;
+            font-family:system-ui, sans-serif;
+            padding:2rem;
+            max-width:800px;
+            margin:auto;
           }}
           textarea {{
-            width: 100%;
-            height: 300px;
-            background: #181818;
-            color: #f0f0f0;
-            border-radius: 8px;
-            border: 1px solid #444;
-            padding: 0.5rem;
-            font-family: monospace;
-            font-size: 0.85rem;
-          }}
-          .box {{
-            max-width: 800px;
-            margin: 0 auto;
+            width:100%;
+            height:300px;
+            background:#222;
+            color:#eee;
+            border:1px solid #444;
+            border-radius:8px;
+            padding:.6rem;
+            font-family:monospace;
+            font-size:0.9rem;
           }}
           button {{
-            margin-top: 0.5rem;
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            border: none;
-            background: #18b09f;
-            color: #000;
-            font-weight: 600;
-            cursor: pointer;
+            padding:0.6rem 1rem;
+            margin-top:1rem;
+            margin-right:0.5rem;
+            border-radius:6px;
+            border:none;
+            background:#18b09f;
+            color:#000;
+            font-weight:600;
+            cursor:pointer;
+          }}
+          button:hover {{
+            filter:brightness(1.2);
           }}
         </style>
       </head>
       <body>
-        <div class="box">
-          <h1>Google Drive Token Ready</h1>
-          <p>Step 1: Click the button below to download <code>token.json</code>, or copy the content.</p>
-          <p>Step 2: In your Frigate Backup Manager UI, open <strong>Google Drive Configuration</strong>.</p>
-          <p>Step 3: Paste this JSON into the token box or upload the file.</p>
+        <h1>Google Drive Token Ready</h1>
+        <p>Download the token.json file or copy the contents below.</p>
 
-          <textarea readonly onclick="this.select();">{token_json}</textarea>
+        <textarea id="tokenBox" readonly onclick="this.select();">{token_json}</textarea>
 
-          <form method="post" action="data:application/json;base64,{token_json.encode('utf-8').hex()}">
-            <!-- NOTE: in practice you'd generate a downloadable blob via JS;
-                 here we focus on the copy-paste UX. -->
-          </form>
-        </div>
+        <br/>
+
+        <button onclick="downloadToken()">Download token.json</button>
+        <button onclick="copyToken()">Copy to clipboard</button>
+
+        <script>
+          function downloadToken() {{
+            const data = `{token_json}`;
+            const blob = new Blob([data], {{ type: "application/json" }});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "token.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }}
+
+          function copyToken() {{
+            const text = document.getElementById("tokenBox").value;
+            navigator.clipboard.writeText(text).then(() => {{
+              alert("Token copied to clipboard");
+            }});
+          }}
+        </script>
       </body>
     </html>
     """
