@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+google-auth
+google-auth-oauthlib
+python-multipart
+jinja2
