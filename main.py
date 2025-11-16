@@ -12,22 +12,24 @@ GOOGLE_REDIRECT_URI = os.environ["GOOGLE_REDIRECT_URI"]  # e.g. https://.../auth
 SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 
 def build_flow() -> Flow:
-    return Flow(
-        client_type="web",
-        client_config={
-            "web": {
-                "client_id": GOOGLE_CLIENT_ID,
-                "project_id": "frigate-backup-manager",
-                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                "token_uri": "https://oauth2.googleapis.com/token",
-                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-                "client_secret": GOOGLE_CLIENT_SECRET,
-                "redirect_uris": [GOOGLE_REDIRECT_URI],
-            }
-        },
+    client_config = {
+        "web": {
+            "client_id": GOOGLE_CLIENT_ID,
+            "client_secret": GOOGLE_CLIENT_SECRET,
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "redirect_uris": [GOOGLE_REDIRECT_URI],
+        }
+    }
+
+    flow = Flow.from_client_config(
+        client_config,
         scopes=SCOPES,
         redirect_uri=GOOGLE_REDIRECT_URI,
     )
+
+    return flow
+
 
 @app.get("/auth/start")
 async def auth_start():
